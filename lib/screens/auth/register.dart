@@ -45,9 +45,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (response.statusCode == 200) {
         _showAlert("✅ Cuenta creada", "Ya puedes iniciar sesión");
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, '/');
       } else {
-        _showAlert("Error", data["message"] ?? "No se pudo registrar");
+        _showAlert("Advertencia", data["message"] ?? "No se pudo registrar");
+        Navigator.pushReplacementNamed(context, '/');
       }
     } catch (e) {
       _showAlert("Error", "No se pudo conectar con el servidor");
@@ -157,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               // 🔗 Link
               GestureDetector(
-                onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+                onTap: () => Navigator.pushReplacementNamed(context, '/'),
                 child: Text(
                   "¿Ya tienes cuenta? Inicia sesión",
                   style: TextStyle(
