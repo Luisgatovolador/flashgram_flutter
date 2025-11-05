@@ -244,68 +244,100 @@ class _FeedPageState extends State<FeedPage> {
                                       itemCount: userPosts.length,
                                       itemBuilder: (context, index) {
                                         final post = userPosts[index];
-                                        final caption = post['caption'] ?? 'Sin descripción';
-                                        final imageUrl = '$apiUrl${post['image']}';
+                                        final caption =
+                                            post['caption'] ?? 'Sin descripción';
+                                        final imageUrl =
+                                            '$apiUrl${post['image']}';
 
-                                        return Container(
-                                          width: 220,
-                                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                                          decoration: BoxDecoration(
-                                            color: cardColor,
-                                            borderRadius: BorderRadius.circular(16),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black.withOpacity(0.05),
-                                                blurRadius: 10,
-                                                offset: const Offset(0, 5),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius: const BorderRadius.vertical(
-                                                  top: Radius.circular(16),
+                                        return GestureDetector(
+                                          onTap: () {
+                                            // 👇 Al tocar, abrir detalle
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => PostDetailPage(
+                                                  username: username,
+                                                  imageUrl: imageUrl,
+                                                  caption: caption,
                                                 ),
-                                                child: Image.network(
-                                                  imageUrl,
-                                                  width: double.infinity,
-                                                  height: 180,
-                                                  fit: BoxFit.cover,
-                                                  loadingBuilder: (context, child, loadingProgress) {
-                                                    if (loadingProgress == null) return child;
-                                                    return Container(
-                                                      height: 180,
-                                                      color: Colors.grey.shade300,
-                                                      child: const Center(
-                                                        child: CircularProgressIndicator(),
-                                                      ),
-                                                    );
-                                                  },
-                                                  errorBuilder: (context, error, stack) => Container(
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            width: 220,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              color: cardColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.05),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 5),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      const BorderRadius.vertical(
+                                                    top: Radius.circular(16),
+                                                  ),
+                                                  child: Image.network(
+                                                    imageUrl,
+                                                    width: double.infinity,
                                                     height: 180,
-                                                    color: Colors.grey.shade300,
-                                                    child: const Icon(
-                                                      Icons.image_not_supported_outlined,
-                                                      size: 50,
+                                                    fit: BoxFit.cover,
+                                                    loadingBuilder: (context,
+                                                        child, loadingProgress) {
+                                                      if (loadingProgress ==
+                                                          null) return child;
+                                                      return Container(
+                                                        height: 180,
+                                                        color:
+                                                            Colors.grey.shade300,
+                                                        child: const Center(
+                                                          child:
+                                                              CircularProgressIndicator(),
+                                                        ),
+                                                      );
+                                                    },
+                                                    errorBuilder:
+                                                        (context, error, stack) =>
+                                                            Container(
+                                                      height: 180,
+                                                      color:
+                                                          Colors.grey.shade300,
+                                                      child: const Icon(
+                                                        Icons
+                                                            .image_not_supported_outlined,
+                                                        size: 50,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.all(10),
-                                                child: Text(
-                                                  caption,
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: captionColor,
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: Text(
+                                                    caption,
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: captionColor,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         );
                                       },
@@ -337,6 +369,65 @@ class _FeedPageState extends State<FeedPage> {
               icon: Icon(Icons.add_circle_outline, size: 40), label: 'Crear'),
           BottomNavigationBarItem(
               icon: Icon(Icons.logout_outlined, size: 30), label: 'Logout'),
+        ],
+      ),
+    );
+  }
+}
+
+/// 🌟 Nueva pantalla para mostrar el post en grande
+class PostDetailPage extends StatelessWidget {
+  final String username;
+  final String imageUrl;
+  final String caption;
+
+  const PostDetailPage({
+    Key? key,
+    required this.username,
+    required this.imageUrl,
+    required this.caption,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('@$username'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  imageUrl,
+                  width: double.infinity,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  errorBuilder: (context, error, stack) =>
+                      const Icon(Icons.broken_image, size: 80),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              caption,
+              style: TextStyle(fontSize: 16, color: textColor),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 10),
         ],
       ),
     );

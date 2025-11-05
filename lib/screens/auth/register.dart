@@ -17,6 +17,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool isLoading = false;
 
+  // 🔍 Expresión regular para validar correo electrónico
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
   Future<void> handleRegister() async {
     final displayName = displayNameController.text.trim();
     final email = emailController.text.trim();
@@ -24,6 +32,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (displayName.isEmpty || email.isEmpty || password.isEmpty) {
       _showAlert("Error", "Todos los campos son obligatorios");
+      return;
+    }
+
+    // 🚨 Validar formato de correo electrónico
+    if (!_isValidEmail(email)) {
+      _showAlert("Error", "Por favor, ingresa un correo electrónico válido");
       return;
     }
 
@@ -175,7 +189,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildInput(String hint, TextEditingController controller, Map colors,
-      {bool obscureText = false, TextInputType keyboardType = TextInputType.text}) {
+      {bool obscureText = false,
+      TextInputType keyboardType = TextInputType.text}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       child: TextField(
@@ -185,14 +200,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         style: TextStyle(color: colors["text"]),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: (colors["text"] as Color).withOpacity(0.6)),
+          hintStyle:
+              TextStyle(color: (colors["text"] as Color).withOpacity(0.6)),
           filled: true,
           fillColor: colors["inputBackground"],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         ),
       ),
     );
